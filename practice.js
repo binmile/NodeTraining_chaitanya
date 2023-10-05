@@ -77,16 +77,24 @@
 //     // return false;
 //   }
     
+// http server
 
+// const http = require('http');
 
-const http = require('http');
-
-//create a server object:
-http.createServer(function (req, res) {
+// //create a server object:
+// http.createServer(function (req, res) {
     
-  res.write('Hello World!'); //write a response to the client
-  res.end(); //end the response
-}).listen(3000,()=>{
-    console.log('server is now running')
-}); //the server object listens on port 8080
+//   res.write('Hello World!'); //write a response to the client
+//   res.end(); //end the response
+// }).listen(3000,()=>{
+//     console.log('server is now running')
+// }); //the server object listens on port 8080
 
+// module.exports =  a = 10
+
+const express = require('express')
+const PORT = 4000
+
+const app = express()
+
+app.listen(PORT, () => console.log(`server is now running on port ${PORT}`))
