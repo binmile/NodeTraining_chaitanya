@@ -88,5 +88,4 @@ http.createServer(function (req, res) {
   res.end(); //end the response
 }).listen(3000,()=>{
     console.log('server is now running')
-}); //the server object listens on port 8080
-
+}); 
