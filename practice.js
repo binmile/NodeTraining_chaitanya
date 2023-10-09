@@ -91,12 +91,14 @@ http.createServer(function (req, res) {
 }); //the server object listens on port 8080
 
 const fs = require("node:fs")
-const content = fs.readFileSync('./file.txt','utf-8')
+// const content = fs.readFileSync('./file.txt','utf-8')
 // async
 const content2 = fs.readFile('./file.txt','utf-8',(err,data)=>{
    console.log(data)
 })
-console.log(content)
+// console.log(content)
+
+// flaga=> append
 
 fs.writeFileSync('./greet.txt',' hello brother',{flag:'a'})
 fs.writeFileSync('./file.txt','hello brather')
@@ -118,3 +120,27 @@ async function readFile(){
 }
 
 readFile();
+
+
+// creating folder
+// fs.mkdirSync('creatingfolder')
+
+// creating file 
+// fs.writeFileSync('creatingfolder/file.txt','Dummy data inside file');
+
+// updating file
+// fs.appendFileSync('creatingfolder/file.txt',' appended text at the end.')
+
+// reading data 
+const Data = fs.readFileSync('creatingfolder/myFile.txt','utf-8');
+console.log(Data)
+
+// rename file
+// fs.renameSync('creatingfolder/file.txt','creatingfolder/myFile.txt')
+
+// delete file
+// fs.unlinkSync('file.txt');
+
+// deleting folder
+// fs.mkdirSync('Deletethis')
+// fs.rmdirSync('Deletethis')
