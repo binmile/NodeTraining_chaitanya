@@ -13,13 +13,12 @@ app.use(
         extended:true
     })
 )
-function validate(type,name,req,res){
+function validate(name,ext,req,res){
     name=name.split('.')
     const time = new Date()
     name = name[0]+time.getTime().toString()
-   
     const fileBuffer = req.file.buffer;
-    const filePath = `public/images/${name}.${type}`;
+    const filePath = `public/images/${name}.${ext}`;
     fs.writeFile(filePath, fileBuffer, () => {
     res.status(200).send(`File saved successfully.Name: ${name}`);
       });
@@ -27,16 +26,17 @@ function validate(type,name,req,res){
 
 
 // const upload =multer({dest: './public/images'})
-const data = app.post('/',multer().single('image'),(req,res)=>{
+const data = app.post('/',multer().single('file'),(req,res)=>{
     let name = req.file.originalname;
-    const ext = req.file.mimetype;
+    let ext = req.file.mimetype;
+    var parts = ext.split('/');
+    ext = parts[1];
     const size= req.file.size/1000
-
     if (ext=='image/jpeg' && size<=35){
-       validate('png',name,req,res)
+       validate(name,ext,req,res,ext)
     }
     else if(ext!='image/jpeg' && size<=80){
-        validate('pdf',name,req,res)
+        validate(name,ext,req,res)
     }
     else{
         res.status(413).send('large file')
