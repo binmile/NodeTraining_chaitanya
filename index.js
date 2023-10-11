@@ -19,9 +19,9 @@ function validate(name,ext,req,res){
     name = name[0]+time.getTime().toString()
     const fileBuffer = req.file.buffer;
     const filePath = `public/images/${name}.${ext}`;
-    fs.writeFile(filePath, fileBuffer, () => {
-    res.status(200).send(`File saved successfully.Name: ${name}`);
-      });
+    fs.writeFileSync(filePath, fileBuffer,
+    res.status(200).send(`File saved successfully.Name: ${name}`));
+      return name
 }
 
 
@@ -33,10 +33,14 @@ const data = app.post('/',multer().single('file'),(req,res)=>{
     ext = parts[1];
     const size= req.file.size/1000
     if (ext=='image/jpeg' && size<=35){
-       validate(name,ext,req,res,ext)
+        const path= validate(name,ext,req,res)
     }
-    else if(ext!='image/jpeg' && size<=80){
-        validate(name,ext,req,res)
+    else if(ext!='image/jpeg')
+    {
+        const value= validate(name,ext,req,res)
+        const pdfparse = require('./pdfParse.js')
+        pdfparse(`./public/images/${value}.pdf`)
+
     }
     else{
         res.status(413).send('large file')
