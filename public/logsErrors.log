@@ -1,0 +1,25 @@
+{
+  meta: {
+    req: {
+      url: '/400',
+      headers: {
+        'user-agent': 'PostmanRuntime/7.33.0',
+        accept: '*/*',
+        'cache-control': 'no-cache',
+        'postman-token': 'c3f18a93-e14c-40b3-98bc-31ddfa57035c',
+        host: 'localhost:4000',
+        'accept-encoding': 'gzip, deflate, br',
+        connection: 'keep-alive'
+      },
+      method: 'GET',
+      httpVersion: '1.1',
+      originalUrl: '/400',
+      query: {}
+    },
+    res: { statusCode: 500 },
+    responseTime: 0
+  },
+  level: 'error',
+  message: 'HTTP GET /400',
+  timestamp: '2023-10-17T07:13:12.310Z'
+}
