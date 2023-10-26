@@ -1,31 +1,29 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../database/database');
-
-const Employee = sequelize.define(
+  const { DataTypes } = require("sequelize");
+  const sequelize = require("../database/database");
+  const Employee = sequelize.define(
     "Employee",
     {
-      EmployeeID: {
+      firstName: {
+        type: DataTypes.STRING,
+      },
+      lastName: {
+        type: DataTypes.STRING,
+      },
+      email: {
+        type: DataTypes.STRING,
+      },
+      age: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
       },
-      FirstName: {
+      gender: {
+        type: DataTypes.ENUM("male", "female"),
+      },
+      phone_number: {
         type: DataTypes.STRING,
-      },
-      LastName: {
-        type: DataTypes.STRING,
-      },
-      Department: {
-        type: DataTypes.STRING,
-      },
-      Salary: {
-        type: DataTypes.INTEGER,
       },
     },
     {
-      timestamps: false,
-      tableName: "Employees",
+      freezeTableName: true,
     }
-  ); 
-
-
-module.exports = {Employee};
+  );
+  module.exports = {Employee};

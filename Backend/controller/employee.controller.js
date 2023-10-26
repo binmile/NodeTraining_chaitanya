@@ -1,69 +1,90 @@
-const {Employee} = require("../models/models");
+const { RESPONSE_CODES, RESPONSE_MESSAGES } = require("../common/constant");
+const responseHandler = require("../common/responseHandler");
+const {
+  getAllEmployeesService,
+  getUserByIDService,
+  deleteUserService,
+  createUserService,
+  updateUserService,
+  filterGetAllEmployeesService,
+} = require("../service/employee.service");
+const {
+  userValidator,
+  updateUserValidator,
+  idValidator,
+} = require("../validationSchemas/user.validation");
 
-async function getAllEmployees(req,res){
-    const employees =  await Employee.findAll();
-    console.log(employees);
-    res.json(employees)
+async function getAllEmployees(req, res) {
+  await getAllEmployeesService(req, res);
 }
-async function getUserByIDController(req,res){
-    const id = req.params.id
-     Employee.findByPk(id).then(data=>{
-        res.json(data.toJSON());
-     }).catch(err=>{
-        res.json({error:true,message:err.message})
-     })
+
+async function filterGetAllEmployees(req, res) {
+  const { order, ...placeholder } = req.query;
+  const { error } = updateUserValidator.validate(placeholder);
+  if (error) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
+      error: error,
+      res: res,
+      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
+    });
+  } else {
+    await filterGetAllEmployeesService(req, res);
+  }
+}
+
+async function getUserByIDController(req, res) {
+  await getUserByIDService(req, res);
 }
 async function deleteUserController(req, res) {
-    const id = req.params.id;
-
-    try {
-        const result = await Employee.destroy({
-            where: {
-                EmployeeID: id
-            }
-        });
-
-        if (result === 1) {
-            res.json('entry deleted');
-        } else {
-            res.json({ error: true, message: 'ID not found' });
-        }
-    } catch (err) {
-        res.json({ error: true, message: err.message });
-    }
-}
-async function createUserController(req,res){
-    const data= req.body;
-    const Joi = require('joi');
-    const schema = Joi.object().keys({
-        EmployeeID: Joi.number().integer().greater(6).required(),
-        FirstName: Joi.string().required(),
-        LastName: Joi.string().required(),
+  const id = req.params.id;
+  const { error } = idValidator.validate(id);
+  if (error) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
+      error: error,
+      res: res,
+      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
     });
-
-    const { error } = schema.validate(data);
-    if (error) {
-        res.status(400).json({ error: error.details[0].message });
-    } else {
-        console.log(data);
-        res.json('ok');
-        Employee.create(data)
-    }
+  } else {
+    await deleteUserService(req, res);
+  }
+}
+async function createUserController(req, res) {
+  const data = req.body;
+  const { error } = userValidator.validate(data);
+  if (error) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
+      error: error,
+      res: res,
+      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
+    });
+  } else {
+    await createUserService(req, res);
+  }
 }
 
-async function updateUserController(req,res){
-    id = req.params.id
-    placeholder = req.body
-    console.log(placeholder)
-    try{
-        await Employee.update(placeholder,
-            {
-                where: {EmployeeID:id}
-            })
-        res.json("done")
-
-    }catch(err){
-        res.json("error",err)
-    }
+async function updateUserController(req, res) {
+  const id = req.params.id;
+  const data = req.body;
+  const { error } = updateUserValidator.validate(data) || idValidator(id);
+  if (error) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
+      error: error,
+      res: res,
+      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
+    });
+  } else {
+    await updateUserService(req, res);
+  }
 }
-module.exports= {getAllEmployees,getUserByIDController,deleteUserController,createUserController,updateUserController}
+module.exports = {
+  getAllEmployees,
+  getUserByIDController,
+  deleteUserController,
+  createUserController,
+  updateUserController,
+  filterGetAllEmployees,
+};
