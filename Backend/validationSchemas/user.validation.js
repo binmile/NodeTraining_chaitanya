@@ -9,7 +9,7 @@ const userValidator = Joi.object().keys({
   }),
   age: Joi.number().min(18).max(70).required(),
   gender: Joi.string().required(),
-  phone_number: Joi.string().required(),
+  phone_number: Joi.string().min(10).max(10).required(),
 });
 
 const updateUserValidator = Joi.object().keys({
@@ -21,7 +21,7 @@ const updateUserValidator = Joi.object().keys({
   }),
   age: Joi.number().min(18).max(70),
   gender: Joi.string(),
-  phone_number: Joi.string(),
+  phone_number: Joi.string().min(10).max(10),
 });
 
 const idValidator = Joi.number();

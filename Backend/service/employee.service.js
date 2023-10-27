@@ -10,12 +10,10 @@ const {
   filterGetAllEmployeesdb,
 } = require("../employeeDB/employeedb");
 
-import to from "await-to-js";
+const to = require("await-to-js").default;
 
 async function filterGetAllEmployeesService(req, res) {
-
-  const data = await filterGetAllEmployeesdb(req, res);
-
+  const [err, data] = await to(filterGetAllEmployeesdb(req));
   if (data != null) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -26,7 +24,7 @@ async function filterGetAllEmployeesService(req, res) {
   } else {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_NOT_FOUND,
-      error: true,
+      error: err,
       res: res,
       message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
     });
@@ -34,14 +32,11 @@ async function filterGetAllEmployeesService(req, res) {
 }
 
 async function getAllEmployeesService(req, res) {
-  const data = await getAllEmployeesdb(req, res);
-
+  const [err, data] = await to(getAllEmployeesdb());
   page = req.query.page || 1;
   const limit = req.query.limit || 5;
-
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
-
   if (data != null) {
     const Data = data.slice(startIndex, endIndex);
     responseHandler({
@@ -53,7 +48,7 @@ async function getAllEmployeesService(req, res) {
   } else {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_NOT_FOUND,
-      error: true,
+      error: err,
       res: res,
       message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
     });
@@ -61,7 +56,8 @@ async function getAllEmployeesService(req, res) {
 }
 
 async function getUserByIDService(req, res) {
-  const data = await getUserByIDdb(req, res);
+  const [err,data] = await to(getUserByIDdb(req));
+  console.log(data)
   if (data != null) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -72,7 +68,7 @@ async function getUserByIDService(req, res) {
   } else {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_NOT_FOUND,
-      error: true,
+      error: err,
       res: res,
       message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
     });
@@ -80,8 +76,8 @@ async function getUserByIDService(req, res) {
 }
 
 async function deleteUserService(req, res) {
-  const data = await deleteUserdb(req, res);
-  if (data === true) {
+  const [err,data] = await to(deleteUserdb(req));
+  if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
       data: data,
@@ -99,12 +95,12 @@ async function deleteUserService(req, res) {
 }
 
 async function createUserService(req, res) {
-  const data = await createUserdb(req, res);
-  if (data === true) {
+  const [err,data] = await to(createUserdb(req));
+  if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
       data: data,
-      res: res,
+      res: res, 
       message: RESPONSE_MESSAGES.INSERT_SUCCESS,
     });
   } else {
@@ -118,8 +114,8 @@ async function createUserService(req, res) {
 }
 
 async function updateUserService(req, res) {
-  const data = await updateUserdb(req, res);
-  if (data === true) {
+  const [err,data] = await to(updateUserdb(req));
+  if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
       data: data,
