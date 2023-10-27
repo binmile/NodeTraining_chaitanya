@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "body-parser": "^1.20.2",
+    "joi": "^13.0.2",
+    "sequelize": "^6.33.0",
     "vite": "^4.4.11"
   }
 }
