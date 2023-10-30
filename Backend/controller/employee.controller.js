@@ -7,11 +7,13 @@ const {
   createUserService,
   updateUserService,
   filterGetAllEmployeesService,
+  searchUserService
 } = require("../service/employee.service");
 const {
-  userValidator,
-  updateUserValidator,
-  idValidator,
+  userSchema,
+  updateUserSchema,
+  idSchema,
+  stringSchema,
 } = require("../validationSchemas/user.validation");
 
 async function getAllEmployees(req, res) {
@@ -19,9 +21,9 @@ async function getAllEmployees(req, res) {
 }
 
 async function filterGetAllEmployees(req, res) {
-  const { order, ...placeholder } = req.query;
-  const { error } = updateUserValidator.validate(placeholder);
-  if (error) {
+  const { order,search, ...placeholder } = req.query;
+  const { error } = updateUserSchema.validate(placeholder);
+  if (error) {-
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
       error: error,
@@ -38,7 +40,7 @@ async function getUserByIDController(req, res) {
 }
 async function deleteUserController(req, res) {
   const id = req.params.id;
-  const { error } = idValidator.validate(id);
+  const { error } = idSchema.validate(id);
   if (error) {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
@@ -52,7 +54,7 @@ async function deleteUserController(req, res) {
 }
 async function createUserController(req, res) {
   const data = req.body;
-  const { error } = userValidator.validate(data);
+  const { error } = userSchema.validate(data);
   if (error) {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
@@ -68,7 +70,7 @@ async function createUserController(req, res) {
 async function updateUserController(req, res) {
   const id = req.params.id;
   const data = req.body;
-  const { error } = updateUserValidator.validate(data) || idValidator(id);
+  const { error } = updateUserSchema.validate(data) || idSchema(id);
   if (error) {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
@@ -80,6 +82,21 @@ async function updateUserController(req, res) {
     await updateUserService(req, res);
   }
 }
+
+async function searchUserController(req, res) {
+  const key = req.query.key
+  const { error } = stringSchema.validate(key);
+  if (error) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
+      error: error,
+      res: res,
+      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
+    });
+  } else {
+    await searchUserService(req, res);
+  }
+}
 module.exports = {
   getAllEmployees,
   getUserByIDController,
@@ -87,4 +104,5 @@ module.exports = {
   createUserController,
   updateUserController,
   filterGetAllEmployees,
+  searchUserController,
 };

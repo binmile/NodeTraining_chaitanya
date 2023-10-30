@@ -8,12 +8,14 @@ const {
   updateUserdb,
   getUserByIDdb,
   filterGetAllEmployeesdb,
+  searchUserdb
 } = require("../employeeDB/employeedb");
 
 const to = require("await-to-js").default;
 
 async function filterGetAllEmployeesService(req, res) {
-  const [err, data] = await to(filterGetAllEmployeesdb(req));
+  const { order,search, ...placeholder } = req.query;
+  const [err, data] = await to(filterGetAllEmployeesdb(order,search,placeholder));
   if (data != null) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -34,7 +36,7 @@ async function filterGetAllEmployeesService(req, res) {
 async function getAllEmployeesService(req, res) {
   const [err, data] = await to(getAllEmployeesdb());
   page = req.query.page || 1;
-  const limit = req.query.limit || 5;
+  const limit = req.query.limit || 100;
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
   if (data != null) {
@@ -56,7 +58,7 @@ async function getAllEmployeesService(req, res) {
 }
 
 async function getUserByIDService(req, res) {
-  const [err,data] = await to(getUserByIDdb(req));
+  const [err,data] = await to(getUserByIDdb(req.params.id));
   console.log(data)
   if (data != null) {
     responseHandler({
@@ -76,7 +78,7 @@ async function getUserByIDService(req, res) {
 }
 
 async function deleteUserService(req, res) {
-  const [err,data] = await to(deleteUserdb(req));
+  const [err,data] = await to(deleteUserdb(req.params.id));
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -95,7 +97,7 @@ async function deleteUserService(req, res) {
 }
 
 async function createUserService(req, res) {
-  const [err,data] = await to(createUserdb(req));
+  const [err,data] = await to(createUserdb(req.body));
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
@@ -114,7 +116,7 @@ async function createUserService(req, res) {
 }
 
 async function updateUserService(req, res) {
-  const [err,data] = await to(updateUserdb(req));
+  const [err,data] = await to(updateUserdb(req.params.id,req.body));
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
@@ -132,6 +134,25 @@ async function updateUserService(req, res) {
   }
 }
 
+async function searchUserService(req, res) {
+  const [err,data] = await to(searchUserdb(req.query.key));
+  if (!err) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.SUCCESS_OK,
+      data: data,
+      res: res,
+      message: RESPONSE_MESSAGES.FETCHED,
+    });
+  } else {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_NOT_FOUND,
+      error: true,
+      res: res,
+      message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
+    });
+  }
+}
+
 module.exports = {
   getAllEmployeesService,
   getUserByIDService,
@@ -139,4 +160,5 @@ module.exports = {
   createUserService,
   updateUserService,
   filterGetAllEmployeesService,
+  searchUserService
 };

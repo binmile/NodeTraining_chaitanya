@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const userValidator = Joi.object().keys({
+const userSchema = Joi.object().keys({
   firstName: Joi.string().alphanum().min(3).max(20).required(),
   lastName: Joi.string().alphanum().min(3).max(20).required(),
   email: Joi.string().email({
@@ -12,7 +12,7 @@ const userValidator = Joi.object().keys({
   phone_number: Joi.string().min(10).max(10).required(),
 });
 
-const updateUserValidator = Joi.object().keys({
+const updateUserSchema = Joi.object().keys({
   firstName: Joi.string().alphanum().min(3).max(20),
   lastName: Joi.string().alphanum().min(3).max(20),
   email: Joi.string().email({
@@ -24,6 +24,7 @@ const updateUserValidator = Joi.object().keys({
   phone_number: Joi.string().min(10).max(10),
 });
 
-const idValidator = Joi.number();
+const idSchema = Joi.number();
+const stringSchema = Joi.string().alphanum();
 
-module.exports = { userValidator, updateUserValidator, idValidator };
+module.exports = { userSchema, updateUserSchema, idSchema ,stringSchema};

@@ -6,9 +6,9 @@ const responseHandler = ({
   data = [],
 }) => {
   res.json({
-    error: error,
     statusCode: statusCode,
     message: message,
+    error: error,
     data: data,
   });
 };
