@@ -1,5 +1,13 @@
 const { RESPONSE_CODES, RESPONSE_MESSAGES } = require("../common/constant");
 const responseHandler = require("../common/responseHandler");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
+
+const secretKey = process.env.SECRET_KEY;
+
 const {
   getAllEmployeesService,
   getUserByIDService,
@@ -7,7 +15,8 @@ const {
   createUserService,
   updateUserService,
   filterGetAllEmployeesService,
-  searchUserService
+  searchUserService,
+  createTokenService,
 } = require("../service/employee.service");
 const {
   userSchema,
@@ -16,15 +25,13 @@ const {
   stringSchema,
 } = require("../validationSchemas/user.validation");
 
-async function getAllEmployees(req, res) {
-  await getAllEmployeesService(req, res);
-}
+
 
 async function filterGetAllEmployees(req, res) {
-  const { order,search, ...placeholder } = req.query;
+  const { order, search,page,limit, ...placeholder } = req.query;
   const { error } = updateUserSchema.validate(placeholder);
-  if (error) {-
-    responseHandler({
+  if (error) {
+    -responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
       error: error,
       res: res,
@@ -70,7 +77,7 @@ async function createUserController(req, res) {
 async function updateUserController(req, res) {
   const id = req.params.id;
   const data = req.body;
-  const { error } = updateUserSchema.validate(data) || idSchema(id);
+  const error = updateUserSchema.validate(data) || idSchema.validate(id);
   if (error) {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
@@ -79,30 +86,52 @@ async function updateUserController(req, res) {
       message: RESPONSE_MESSAGES.VALIDATION_ERROR,
     });
   } else {
-    await updateUserService(req, res);
+    if (data.password) {
+      responseHandler({
+        statusCode: RESPONSE_CODES.FAILURE_FORBIDDEN_ACCESS,
+        error: error,
+        res: res,
+        message: RESPONSE_MESSAGES.FAILURE_FORBIDDEN_ACCESS,
+      });
+    } else {
+      await updateUserService(req, res);
+    }
   }
 }
 
-async function searchUserController(req, res) {
-  const key = req.query.key
-  const { error } = stringSchema.validate(key);
-  if (error) {
-    responseHandler({
-      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
-      error: error,
-      res: res,
-      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
-    });
-  } else {
-    await searchUserService(req, res);
-  }
+
+
+async function createToken(req,res){
+  const user = req.body.user;
+  const pass = req.body.password;
+  const token = await createTokenService(req,user,pass);
+  res.json({
+    token: token
+  })
+
 }
+
+async function verifyToken(req,res){
+  const user = jwt.decode(req.token).user;
+  const key = user +`${secretKey}`
+  jwt.verify(req.token, key, (err, authData) => {
+    if (err) {
+      res.send({ result: "invalid token" });
+    } else {
+      res.json({
+        message: "token verified successfully",
+        authData,
+      });
+    }
+  });
+}
+
 module.exports = {
-  getAllEmployees,
   getUserByIDController,
   deleteUserController,
   createUserController,
   updateUserController,
   filterGetAllEmployees,
-  searchUserController,
+  createToken,
+  verifyToken
 };

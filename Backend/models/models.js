@@ -3,10 +3,10 @@
   const Employee = sequelize.define(
     "Employee",
     {
-      firstName: {
+      user: {
         type: DataTypes.STRING,
       },
-      lastName: {
+      password: {
         type: DataTypes.STRING,
       },
       email: {

@@ -1,8 +1,11 @@
 const Joi = require("joi");
 
 const userSchema = Joi.object().keys({
-  firstName: Joi.string().alphanum().min(3).max(20).required(),
-  lastName: Joi.string().alphanum().min(3).max(20).required(),
+  user: Joi.string().alphanum().min(3).max(20).required(),
+  password: Joi.string().min(6)
+  .max(30)
+  .required()
+  .pattern(new RegExp('^[a-zA-Z0-9]{8,30}$')),
   email: Joi.string().email({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
@@ -13,8 +16,7 @@ const userSchema = Joi.object().keys({
 });
 
 const updateUserSchema = Joi.object().keys({
-  firstName: Joi.string().alphanum().min(3).max(20),
-  lastName: Joi.string().alphanum().min(3).max(20),
+  user: Joi.string().alphanum().min(3).max(20),
   email: Joi.string().email({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
@@ -27,4 +29,4 @@ const updateUserSchema = Joi.object().keys({
 const idSchema = Joi.number();
 const stringSchema = Joi.string().alphanum();
 
-module.exports = { userSchema, updateUserSchema, idSchema ,stringSchema};
+module.exports = { userSchema, updateUserSchema, idSchema, stringSchema };

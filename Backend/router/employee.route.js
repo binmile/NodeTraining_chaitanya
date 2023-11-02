@@ -1,17 +1,19 @@
 const {
-  getAllEmployees,
   getUserByIDController,
   deleteUserController,
   createUserController,
   updateUserController,
   filterGetAllEmployees,
-  searchUserController,
+  createToken,
+  verifyToken,
 } = require("../controller/employee.controller");
+const { authenticateToken } = require("../middleware/authenticate");
 
+app.get("/user", filterGetAllEmployees);
 app.get("/user/:id", getUserByIDController);
-app.get("/users2", getAllEmployees);
 app.delete("/user/:id", deleteUserController);
 app.post("/user", createUserController);
 app.patch("/user/:id", updateUserController);
-app.get("/filter", filterGetAllEmployees);
-app.get("/search",searchUserController)
+
+app.post("/login", createToken);
+app.post("/profile", authenticateToken, verifyToken);

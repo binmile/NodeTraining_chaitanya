@@ -1,21 +1,31 @@
 const responseHandler = require("../common/responseHandler");
 const { RESPONSE_CODES, RESPONSE_MESSAGES } = require("../common/constant");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
+const secretKey = process.env.SECRET_KEY;
 
 const {
   createUserdb,
-  getAllEmployeesdb,
   deleteUserdb,
   updateUserdb,
   getUserByIDdb,
   filterGetAllEmployeesdb,
-  searchUserdb
-} = require("../employeeDB/employeedb");
+  findbyUser,
+} = require("../DB/employeedb");
 
 const to = require("await-to-js").default;
 
 async function filterGetAllEmployeesService(req, res) {
-  const { order,search, ...placeholder } = req.query;
-  const [err, data] = await to(filterGetAllEmployeesdb(order,search,placeholder));
+  const { order, search, page, limit, ...placeholder } = req.query;
+
+  const offset = parseInt((page - 1) * limit) || 1;
+  const lim = parseInt(limit) || 100;
+  const [err, data] = await to(
+    filterGetAllEmployeesdb(order, search, offset, lim, placeholder)
+  );
   if (data != null) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -33,33 +43,8 @@ async function filterGetAllEmployeesService(req, res) {
   }
 }
 
-async function getAllEmployeesService(req, res) {
-  const [err, data] = await to(getAllEmployeesdb());
-  page = req.query.page || 1;
-  const limit = req.query.limit || 100;
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-  if (data != null) {
-    const Data = data.slice(startIndex, endIndex);
-    responseHandler({
-      statusCode: RESPONSE_CODES.SUCCESS_OK,
-      data: Data,
-      res: res,
-      message: RESPONSE_MESSAGES.FETCHED,
-    });
-  } else {
-    responseHandler({
-      statusCode: RESPONSE_CODES.FAILURE_NOT_FOUND,
-      error: err,
-      res: res,
-      message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
-    });
-  }
-}
-
 async function getUserByIDService(req, res) {
-  const [err,data] = await to(getUserByIDdb(req.params.id));
-  console.log(data)
+  const [err, data] = await to(getUserByIDdb(req.params.id));
   if (data != null) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -78,7 +63,7 @@ async function getUserByIDService(req, res) {
 }
 
 async function deleteUserService(req, res) {
-  const [err,data] = await to(deleteUserdb(req.params.id));
+  const [err, data] = await to(deleteUserdb(req.params.id));
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -97,12 +82,21 @@ async function deleteUserService(req, res) {
 }
 
 async function createUserService(req, res) {
-  const [err,data] = await to(createUserdb(req.body));
+  pass = req.body.password;
+  await bcrypt.hash(pass, saltRounds).then(function (hash) {
+    req.body.password = hash;
+  });
+  const [err, data] = await to(createUserdb(req.body));
+  const user = req.body.user;
+  console.log(user)
+  const Data = await findbyUser(user);
+  const key = `${Data.user}${secretKey}`;
+  const token = jwt.sign(Data.toJSON(), key, { expiresIn: "400s" });
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
-      data: data,
-      res: res, 
+      data: token,
+      res: res,
       message: RESPONSE_MESSAGES.INSERT_SUCCESS,
     });
   } else {
@@ -116,7 +110,7 @@ async function createUserService(req, res) {
 }
 
 async function updateUserService(req, res) {
-  const [err,data] = await to(updateUserdb(req.params.id,req.body));
+  const [err, data] = await to(updateUserdb(req.params.id, req.body));
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
@@ -134,31 +128,24 @@ async function updateUserService(req, res) {
   }
 }
 
-async function searchUserService(req, res) {
-  const [err,data] = await to(searchUserdb(req.query.key));
-  if (!err) {
-    responseHandler({
-      statusCode: RESPONSE_CODES.SUCCESS_OK,
-      data: data,
-      res: res,
-      message: RESPONSE_MESSAGES.FETCHED,
-    });
-  } else {
-    responseHandler({
-      statusCode: RESPONSE_CODES.FAILURE_NOT_FOUND,
-      error: true,
-      res: res,
-      message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
-    });
+async function createTokenService(req, user, pass) {
+  const data = await findbyUser(user);
+  const password = data.password;
+  const key = `${data.user}${secretKey}`;
+
+  const result = await bcrypt.compare(pass, password);
+  if (result == true) {
+    const token = jwt.sign(data.toJSON(), key, { expiresIn: "400s" });
+    return token;
   }
+  throw new Error({ message: "wrong password" });
 }
 
 module.exports = {
-  getAllEmployeesService,
   getUserByIDService,
   deleteUserService,
   createUserService,
   updateUserService,
   filterGetAllEmployeesService,
-  searchUserService
+  createTokenService,
 };
