@@ -35,9 +35,20 @@ async function findUserController(req,res){
      RoleService.findUserDetails(req,res)
 }
 
+async function findUserControllerRight(req,res){
+  RoleService.findUserDetailsRight(req,res)
+}
+
+async function findUserControllerLeft(req,res){
+  RoleService.findUserDetailsLeft(req,res)
+}
+
+
 const roleController = {
   validateRoleController,
-  findUserController
+  findUserController,
+  findUserControllerRight,
+  findUserControllerLeft
 };
 
 module.exports = roleController;

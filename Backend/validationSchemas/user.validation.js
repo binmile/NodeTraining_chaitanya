@@ -1,7 +1,8 @@
 const Joi = require("joi");
 
 const userSchema = Joi.object().keys({
-  user: Joi.string().alphanum().min(3).max(20).required(),
+  FirstName: Joi.string().alphanum().min(3).max(20).required(),
+  LastName: Joi.string().alphanum().min(3).max(20).required(),
   password: Joi.string().min(6)
   .max(30)
   .required()
@@ -16,7 +17,8 @@ const userSchema = Joi.object().keys({
 });
 
 const updateUserSchema = Joi.object().keys({
-  user: Joi.string().alphanum().min(3).max(20),
+  FirstName: Joi.string().alphanum().min(3).max(20),
+  LastName: Joi.string().alphanum().min(3).max(20),
   email: Joi.string().email({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },

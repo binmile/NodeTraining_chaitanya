@@ -2,7 +2,7 @@ require("./app");
 require("./database/database");
 require("./models/models");
 require("./models/roleModel");
-require("./models/models");
+// require("./models/models");
 require("./router/employee.route");
 require("./router/role.route")
 

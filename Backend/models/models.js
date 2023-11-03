@@ -3,7 +3,10 @@
   const Employee = sequelize.define(
     "Employee",
     {
-      user: {
+      FirstName: {
+        type: DataTypes.STRING,
+      },
+      LastName: {
         type: DataTypes.STRING,
       },
       password: {
@@ -11,6 +14,7 @@
       },
       email: {
         type: DataTypes.STRING,
+        unique: 'email'
       },
       age: {
         type: DataTypes.INTEGER,

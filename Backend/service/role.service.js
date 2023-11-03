@@ -37,6 +37,7 @@ async function createRoleService(req, res) {
 async function findUserDetails(req, res) {
   const role = req.body.role_name;
   const [err, data] = await to(RoleDB.findUserDB(role));
+  console.log(err,'___________________',data)
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_OK,
@@ -47,17 +48,59 @@ async function findUserDetails(req, res) {
   } else {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_SERVICE_UNAVAILABLE,
-      error: true,
+      error: err,
+      res: res,
+      message: RESPONSE_MESSAGES.FETCHED_NOT_FOUND,
+    });
+  }
+}
+
+async function findUserDetailsRight(req, res) {
+  const role = req.body.role_name;
+  const [err, data] = await to(RoleDB.findUserDBRight(role));
+  if (!err) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.SUCCESS_OK,
+      data: data,
+      res: res,
+      message: RESPONSE_MESSAGES.FETCHED,
+    });
+  } else {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_SERVICE_UNAVAILABLE,
+      error: err,
       res: res,
       message: err,
     });
   }
 }
 
+async function findUserDetailsLeft(req_, res) {
+  const [err, data] = await to(RoleDB.findUserDBLeft(role));
+  if (!err) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.SUCCESS_OK,
+      data: data,
+      res: res,
+      message: RESPONSE_MESSAGES.FETCHED,
+    });
+  } else {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_SERVICE_UNAVAILABLE,
+      error: err,
+      res: res,
+      message: err,
+    });
+  }
+}
+
+
 const RoleService = {
   checkUserService,
   createRoleService,
   findUserDetails,
+  findUserDetailsLeft,
+  findUserDetailsRight
 };
 
 module.exports = RoleService;

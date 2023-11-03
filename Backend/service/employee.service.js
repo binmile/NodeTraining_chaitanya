@@ -87,22 +87,24 @@ async function createUserService(req, res) {
     req.body.password = hash;
   });
   const [err, data] = await to(createUserdb(req.body));
-  const user = req.body.user;
-  console.log(user)
+  const user = req.body.FirstName;
   const Data = await findbyUser(user);
   const key = `${Data.user}${secretKey}`;
   const token = jwt.sign(Data.toJSON(), key, { expiresIn: "400s" });
   if (!err) {
     responseHandler({
       statusCode: RESPONSE_CODES.SUCCESS_CREATED,
-      data: token,
+      data: {
+        'auth-token': token,
+        'user-data':data
+      },
       res: res,
       message: RESPONSE_MESSAGES.INSERT_SUCCESS,
     });
   } else {
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_SERVICE_UNAVAILABLE,
-      error: true,
+      error: err,
       res: res,
       message: RESPONSE_MESSAGES.VALIDATION_ERROR,
     });

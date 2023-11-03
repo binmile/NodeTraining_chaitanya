@@ -22,13 +22,9 @@ const Role = sequelize.define(
   }
 );
 
-
 Role.belongsTo(Employee, {
   foreignKey: 'user_id',
-  as: 'User',
+  as:'User'
 });
-
-
-
 
 module.exports = {Role}

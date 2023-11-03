@@ -53,7 +53,7 @@ async function updateUserdb(id, filter) {
 async function findbyUser(user) {
   return await Employee.findOne({
     where: {
-      user: user,
+      FirstName: user,
     },
   });
 }
