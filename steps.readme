@@ -1,0 +1,18 @@
+2 Methods:
+    (A) Directly concatinating 2 buffers
+
+        (1)
+        const mergedVideoContent = Buffer.concat([videoContent1, videoContent2]);
+
+        (2)
+        saving the created buffer in our local storage
+
+        problem => the downloaded video only shows  the first video
+
+    (B) using ffmpeg library
+
+        (1)
+        extrating 2 video links from postman (put error check)
+
+        (2)
+        push the data into a stream

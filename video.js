@@ -1,29 +1,37 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
-const app = express()
-app.use(cors())
+global.app = express();
+app.use(cors());
 const bodyParser = require("body-parser");
-const downloadVideo = require('./code');
+const downloadVideo = require("./code");
+
+const ffmpeg = require('fluent-ffmpeg');
+const merge = require("./merge");
+const mergeVideos = require("./merge");
+const mailer = require("./nodemailer");
 
 app.use(
-    bodyParser.urlencoded({
-      extended: true,
-    })
-  );
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
+app.use(express.json());
 
+app.get("/", (req, res) => {
+  return res.json("From Backend Side");
+});
 
-app.get('/',(req,res)=>{
-    return res.json("From Backend Side");
-})
+app.listen(8000, () => {
+  console.log("server is live");
+});
+require("./code");
+require("./code2");
+require("./code3");
+require("./merge");
+app.get("/link", downloadVideo);
+app.get("/merge", mergeVideos);
 
+app.get("/mail", mailer)
 
-
-
-app.listen(8000,()=>{
-    console.log('server is live')
-})
-require('./code')
-
-app.get('/link',downloadVideo)
