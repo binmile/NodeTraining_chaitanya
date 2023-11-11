@@ -60,7 +60,6 @@ async function findUserDBLeft(data) {
   SELECT Role.*, Employee.*
   FROM Role
   LEFT JOIN Employee ON Role.user_id = Employee.id;
-  
   `;
 
   return await sequelize.query(sql, {
