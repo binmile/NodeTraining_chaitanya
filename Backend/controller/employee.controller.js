@@ -17,6 +17,7 @@ const {
   filterGetAllEmployeesService,
   searchUserService,
   createTokenService,
+  sendMailService,
 } = require("../service/employee.service");
 const {
   userSchema,
@@ -25,10 +26,8 @@ const {
   stringSchema,
 } = require("../validationSchemas/user.validation");
 
-
-
 async function filterGetAllEmployees(req, res) {
-  const { order, search,page,limit, ...placeholder } = req.query;
+  const { order, search, page, limit, ...placeholder } = req.query;
   const { error } = updateUserSchema.validate(placeholder);
   if (error) {
     -responseHandler({
@@ -77,8 +76,9 @@ async function createUserController(req, res) {
 async function updateUserController(req, res) {
   const id = req.params.id;
   const data = req.body;
-  const error = updateUserSchema.validate(data) || idSchema.validate(id);
+  const error = null // updateUserSchema.validate(data) || idSchema.validate(id);
   if (error) {
+    console.log(error)
     responseHandler({
       statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
       error: error,
@@ -99,21 +99,31 @@ async function updateUserController(req, res) {
   }
 }
 
-
-
-async function createToken(req,res){
-  const user = req.body.user;
-  const pass = req.body.password;
-  const token = await createTokenService(req,user,pass);
-  res.json({
-    token: token
-  })
-
+async function sendMailController(req, res) {
+  try {
+    sendMailService(req,res)
+  } catch (error) {
+    responseHandler({
+      statusCode: RESPONSE_CODES.FAILURE_BAD_REQUEST,
+      error: error,
+      res: res,
+      message: RESPONSE_MESSAGES.VALIDATION_ERROR,
+    });
+  }
 }
 
-async function verifyToken(req,res){
+async function createToken(req, res) {
+  const user = req.body.user;
+  const pass = req.body.password;
+  const token = await createTokenService(req, user, pass);
+  res.json({
+    token: token,
+  });
+}
+
+async function verifyToken(req, res) {
   const user = jwt.decode(req.token).user;
-  const key = user +`${secretKey}`
+  const key = user + `${secretKey}`;
   jwt.verify(req.token, key, (err, authData) => {
     if (err) {
       res.send({ result: "invalid token" });
@@ -133,5 +143,6 @@ module.exports = {
   updateUserController,
   filterGetAllEmployees,
   createToken,
-  verifyToken
+  verifyToken,
+  sendMailController
 };

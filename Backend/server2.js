@@ -6,6 +6,8 @@ require("./models/roleModel");
 require("./router/employee.route");
 require("./router/role.route")
 
-app.listen(8081, () => {
-  console.log("listening at http://localhost:8081");
+const PORT = 8000
+
+app.listen(PORT, () => {
+  console.log(`listening at http://localhost:${PORT}`);
 });

@@ -7,10 +7,7 @@ const userSchema = Joi.object().keys({
   .max(30)
   .required()
   .pattern(new RegExp('^[a-zA-Z0-9]{8,30}$')),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-    tlds: { allow: ["com", "net"] },
-  }),
+  email: Joi.string(),
   age: Joi.number().min(18).max(70).required(),
   gender: Joi.string().required(),
   phone_number: Joi.string().min(10).max(10).required(),
@@ -19,10 +16,7 @@ const userSchema = Joi.object().keys({
 const updateUserSchema = Joi.object().keys({
   FirstName: Joi.string().alphanum().min(3).max(20),
   LastName: Joi.string().alphanum().min(3).max(20),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-    tlds: { allow: ["com", "net"] },
-  }),
+  email: Joi.string(),
   age: Joi.number().min(18).max(70),
   gender: Joi.string(),
   phone_number: Joi.string().min(10).max(10),

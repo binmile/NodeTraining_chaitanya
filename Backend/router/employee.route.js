@@ -6,6 +6,7 @@ const {
   filterGetAllEmployees,
   createToken,
   verifyToken,
+  sendMailController,
 } = require("../controller/employee.controller");
 const { authenticateToken } = require("../middleware/authenticate");
 
@@ -18,3 +19,6 @@ app.post("/user", createUserController);
 
 app.post("/login", createToken);
 app.post("/profile", authenticateToken, verifyToken);
+
+app.get('/mail', sendMailController)
+
