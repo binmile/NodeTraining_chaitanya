@@ -11,6 +11,16 @@ const merge = require("./merge");
 const mergeVideos = require("./merge");
 const mailer = require("./nodemailer");
 
+let ejs = require('ejs');
+
+app.set('view engine', 'ejs')
+app.get('/',(_,res)=>{
+  let user={
+    name:"Chaitanya Varshney",
+    phone: 9810591025
+  }
+  res.render('profile',{user})
+})
 app.use(
   bodyParser.urlencoded({
     extended: true,
